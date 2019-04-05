@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+
+import rospy
+from std_msgs.msg import String
+from neofarm_test.srv import TimePrinterService
+
+global last_min
+last_min = ''
+
+def callback(msg):
+	global last_min
+	h,m,s = msg.data.split(":")
+	if m != last_min:
+		time_printer(msg.data)
+		last_min = m
+
+rospy.init_node('current_time_subscriber')
+
+rospy.wait_for_service('time_print')
+time_printer = rospy.ServiceProxy('time_print',TimePrinterService)
+
+sub = rospy.Subscriber('current_time', String, callback)
+
+
+
+rospy.spin()
